@@ -27,6 +27,12 @@ functions:
     environment:
       BUCKET_NAME: !Ref blogBucket
       MY_REGION: ${aws:region}
+  publisher:
+    handler: publisher.publisher
+    timeout: 30
+    environment:
+      BUCKET_NAME: !Ref blogBucket
+      MY_REGION: ${aws:region}
 
 resources:
   Resources:
