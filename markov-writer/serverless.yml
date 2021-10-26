@@ -1,0 +1,51 @@
+service: markov-writer
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: python3.9
+  lambdaHashingVersion: 20201221
+  region: us-east-2
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action: 
+            - 's3:ListBucket'
+          Resource: !GetAtt blogBucket.Arn
+        - Effect: 'Allow'
+          Action:
+            - 's3:GetObject'
+            - 's3:PutObject'
+          Resource: !Join ["", [!GetAtt blogBucket.Arn, "/*"]]
+
+functions:
+  writer:
+    handler: handler.writer
+    timeout: 30
+    environment:
+      BUCKET_NAME: !Ref blogBucket
+      MY_REGION: ${aws:region}
+
+resources:
+  Resources:
+    blogBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: !Join
+          - "-"
+          - - "ssilv-markovblog-bucket"
+            - !Ref AWS::Region
+
+outputs:
+  BlogBucket:
+    Description: The blog bucket name
+    Value: !Ref blogBucket
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    pythonBin: /home/ssilvidi/.pyenv/shims/python

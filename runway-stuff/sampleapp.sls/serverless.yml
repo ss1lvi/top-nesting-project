@@ -1,0 +1,28 @@
+service: sampleapp
+
+plugins:
+  - serverless-iam-roles-per-function
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+
+provider:
+  name: aws
+  runtime: python3.8
+
+functions:
+  helloWorld:
+    handler: hello_world.handler
+    # iamRoleStatements:
+    #   - Effect: "Allow"
+    #     Action:
+    #       - dynamodb:GetItem
+    #     Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/mytable"
+
+package:
+  exclude:
+    - node_modules/**
+    - package.json
+    - package-lock.json
