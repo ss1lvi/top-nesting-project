@@ -26,12 +26,17 @@ def publisher(event, context):
     parameter = ssm.get_parameter(Name='git-lambda', WithDecryption=True)
     private_key = parameter['Parameter']['Value']
 
-    # save SSH key and chmod permissions
-    with open('~/.ssh/id_rsa', 'w') as outfile:
-        outfile.write(private_key)
-    os.chmod('~/.ssh/id_rsa', 0o400) # leading 0 in python2 and 0o in python 3 defines octal
+    # clean up /tmp
+    os.system("rm -rf /tmp/*")
 
-    repo = git.Repo.clone_from('ss1lvi@github.com:ss1lvi/nesting-blog.git', '/tmp/nesting-blog', branch='test')
+    # save SSH key and chmod permissions
+    with open('/tmp/id_rsa', 'w') as outfile:
+        outfile.write(f'{private_key}\n')
+    os.chmod('/tmp/id_rsa', 0o400) # leading 0 in python2 and 0o in python 3 defines octal
+
+    # os.environ['GIT_SSH_COMMAND'] = 'ssh -o StrictHostKeyChecking=no -i /tmp/id_rsa'
+    # logger.info(f"GIT_SSH_COMMAND= {os.environ['GIT_SSH_COMMAND']}")
+    repo = git.Repo.clone_from('git@github.com:ss1lvi/nesting-blog.git', '/tmp/nesting-blog', branch='test')
     logger.info(f'cloned git repo to /tmp/')
 
     local_dir = '/tmp/nesting-blog/content/blog/'

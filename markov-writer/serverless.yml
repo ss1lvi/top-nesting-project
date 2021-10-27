@@ -41,6 +41,7 @@ functions:
     environment:
       BUCKET_NAME: !Ref blogBucket
       MY_REGION: ${aws:region}
+      GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no -i /tmp/id_rsa'
 
 resources:
   Resources:
