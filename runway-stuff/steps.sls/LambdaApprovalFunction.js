@@ -27,15 +27,16 @@ exports.handler = (event, context, callback) => {
   const taskToken = event.query.taskToken;
   const statemachineName = event.query.sm;
   const executionName = event.query.ex;
+  const articleSlug = event.query.slug;
 
   const stepfunctions = new AWS.StepFunctions();
 
   var message = "";
 
   if (action === "approve") {
-    message = { "Status": "Approved! Task approved by steve.silvidi@rackspace.com" };
+    message = { "Status": "Approved!", "articleSlug": articleSlug };
   } else if (action === "reject") {
-    message = { "Status": "Rejected! Task rejected by steve.silvidi@rackspace.com" };
+    message = { "Status": "Rejected!", "articleSlug": articleSlug };
   } else {
     console.error("Unrecognized action. Expected: approve, reject.");
     callback({"Status": "Failed to process the request. Unrecognized Action."});

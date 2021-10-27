@@ -22,26 +22,26 @@ exports.lambda_handler = (event, context, callback) => {
     const apigwEndpint = event.APIGatewayEndpoint;
     console.log('apigwEndpint = ' + apigwEndpint)
 
-    const approveEndpoint = apigwEndpint + "/execution?action=approve&ex=" + executionName + "&sm=" + statemachineName + "&taskToken=" + encodeURIComponent(taskToken);
-    console.log('approveEndpoint= ' + approveEndpoint);
-
-    const rejectEndpoint = apigwEndpint + "/execution?action=reject&ex=" + executionName + "&sm=" + statemachineName + "&taskToken=" + encodeURIComponent(taskToken);
-    console.log('rejectEndpoint= ' + rejectEndpoint);
-
     const emailSnsTopic = "arn:aws:sns:us-east-2:329082876876:human-approval-test-SNSHumanApprovalEmailTopic-T08K4IIFLD6K";
     console.log('emailSnsTopic= ' + emailSnsTopic);
-
+    
     const articleInput = event.BlogPost;
     console.log('articleInput= ' + articleInput);
-
+    
     const articleTitle = articleInput.body.title;
     console.log('articleTitle= ' + articleTitle);
-
+    
     const articleBody = articleInput.body.body;
     console.log('articleBody= ' + articleBody);
-
+    
     const articleSlug = articleInput.body.slug;
     console.log('articleSlug= ' + articleSlug);
+    
+    const approveEndpoint = apigwEndpint + "/execution?action=approve&ex=" + executionName + "&sm=" + statemachineName + "&slug=" + articleSlug + "&taskToken=" + encodeURIComponent(taskToken);
+    console.log('approveEndpoint= ' + approveEndpoint);
+
+    const rejectEndpoint = apigwEndpint + "/execution?action=reject&ex=" + executionName + "&sm=" + statemachineName + "&slug=" + articleSlug + "&taskToken=" + encodeURIComponent(taskToken);
+    console.log('rejectEndpoint= ' + rejectEndpoint);
 
     var emailMessage = 'A new article is born! \n\n';
     emailMessage += 'This is an email requiring an approval for a newly written article. \n\n'
