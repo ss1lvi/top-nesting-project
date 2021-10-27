@@ -19,6 +19,10 @@ provider:
             - 's3:GetObject'
             - 's3:PutObject'
           Resource: !Join ["", [!GetAtt blogBucket.Arn, "/*"]]
+        - Effect: 'Allow'
+          Action:
+            - 'ssm:GetParameter'
+          Resource: 'arn:aws:ssm:us-east-2:329082876876:parameter/git-lambda'
 
 functions:
   writer:

@@ -27,9 +27,9 @@ def publisher(event, context):
     private_key = parameter['Parameter']['Value']
 
     # save SSH key and chmod permissions
-    with open('/.ssh/id_rsa', 'w') as outfile:
+    with open('~/.ssh/id_rsa', 'w') as outfile:
         outfile.write(private_key)
-    os.chmod('./id_rsa', 0o400) # leading 0 in python2 and 0o in python 3 defines octal
+    os.chmod('~/.ssh/id_rsa', 0o400) # leading 0 in python2 and 0o in python 3 defines octal
 
     repo = git.Repo.clone_from('ss1lvi@github.com:ss1lvi/nesting-blog.git', '/tmp/nesting-blog', branch='test')
     logger.info(f'cloned git repo to /tmp/')
