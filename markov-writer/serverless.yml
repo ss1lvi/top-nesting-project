@@ -30,6 +30,10 @@ functions:
   publisher:
     handler: publisher.publisher
     timeout: 30
+    layers:
+      - arn:aws:lambda:us-east-2:553035198032:layer:git-lambda2:8
+    # package:
+    #   individually: true
     environment:
       BUCKET_NAME: !Ref blogBucket
       MY_REGION: ${aws:region}
