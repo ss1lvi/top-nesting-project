@@ -69,9 +69,9 @@ def markov_format(title, body):
     #
     # $BODY
 
-    logger.info(f'writing article to /tmp/index.html')
+    logger.info(f'writing article to /tmp/index.md')
 
-    with open(f'/tmp/index.html', 'w') as f:
+    with open(f'/tmp/index.md', 'w') as f:
         f.write(f'---\n')
         f.write(f'title: {title}\n')
         f.write(f'date: {datetime.datetime.now().isoformat()}\n')
@@ -117,15 +117,15 @@ def writer(event, context):
     logger.info(f'body: {body}')
 
     # combine title and body into a new post
-    markov_format(title, body) # write new post to /tmp/index.html
+    markov_format(title, body) # write new post to /tmp/index.md
 
     # create an article slug for the folder name
     slug = slugify(title, max_length=24)
-    filename = f'{slug}/index.html'
+    filename = f'{slug}/index.md'
 
     # upload the new article to s3
-    upload_file('/tmp/index.html',f'{bucket_name}',f'{filename}')
-    logger.info(f'uploaded index.html to s3://{bucket_name}/{slug}')
+    upload_file('/tmp/index.md',f'{bucket_name}',f'{filename}')
+    logger.info(f'uploaded index.md to s3://{bucket_name}/{slug}')
 
 
     content = {
