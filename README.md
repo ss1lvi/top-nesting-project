@@ -10,15 +10,17 @@
 
 - [TOP nesting project](#top-nesting-project)
   - [table of contents](#table-of-contents)
-  - [ideas](#ideas)
-    - [markov blog](#markov-blog)
-      - [points](#points)
-      - [diagrams](#diagrams)
-      - [stretch goals](#stretch-goals)
-      - [references](#references)
-      - [log](#log)
-      - [pieces](#pieces)
+  - [markov blog](#markov-blog)
+    - [points](#points)
+    - [diagrams](#diagrams)
+    - [references](#references)
+    - [log](#log)
+    - [pieces](#pieces)
     - [suggestions](#suggestions)
+    - [flowchart:](#flowchart)
+    - [steps](#steps)
+      - [done](#done)
+      - [todo](#todo)
 
 
 ## markov blog
@@ -151,3 +153,44 @@ npm run build && npm run deploy
   - commit to git
 - pause
 - notify for approval
+
+### steps
+
+#### done
+
+- lambda: writer
+- lambda: publisher
+- state machine w/ email approval
+- s3 bucket for lambda usage
+- github repo w/ main/test branches
+- github actions build script
+- s3 bucket for gatsby w/ static site
+- cloudwatch events schedule trigger for state machine
+
+#### todo
+
+- lambda: cleanup
+  - remove post from s3 bucket
+- build IaC
+  - terraform + sls
+    - step function in sls or tf?
+    - buckets in sls or tf?
+    - let sls handle its own iam role
+    - copy needed files into buckets w/ tf?
+    - upload private key for github w/ tf?
+  - runway - yeah why not
+- remake github repo for website
+  - needs a main and a dev branch
+  - need env variable so the main and dev branches build to their own s3 buckets
+  - need to add cloudfront invalidate to the deploy process
+  - need to test PR build process
+- markovify improvements
+  - find another corpus to use
+  - try out spaCy
+- blog improvements
+  - maybe get a new theme
+- README
+  - delete a lot of this
+  - explain what it does
+  - explain how it does it
+  - explain how to do it yourself
