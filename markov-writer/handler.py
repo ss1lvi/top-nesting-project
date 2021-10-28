@@ -121,7 +121,7 @@ def writer(event, context):
 
     # create an article slug for the folder name
     slug = slugify(title, max_length=24)
-    filename = f'blog/{slug}/index.html'
+    filename = f'{slug}/index.html'
 
     # upload the new article to s3
     upload_file('/tmp/index.html',f'{bucket_name}',f'{filename}')
