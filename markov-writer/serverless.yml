@@ -52,15 +52,10 @@ resources:
           - "-"
           - - "ssilv-markovblog-bucket"
             - !Ref AWS::Region
-
-outputs:
-  BlogBucket:
-    Description: The blog bucket name
-    Value: !Ref blogBucket
+  Outputs:
+    BlogBucket:
+      Description: The blog bucket name
+      Value: !Ref blogBucket
 
 plugins:
   - serverless-python-requirements
-
-custom:
-  pythonRequirements:
-    pythonBin: /home/ssilvidi/.pyenv/shims/python
