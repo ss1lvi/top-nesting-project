@@ -1,5 +1,4 @@
 namespace: ${namespace}
-cfngin_bucket: ${cfngin_bucket_name}
 
 sys_path: ./
 
