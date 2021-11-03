@@ -1,6 +1,5 @@
 aws_region = "us-east-2"
 application = "blogbot"
-environment = "dev"
 hosted_zone = "aws.silvidi.com"
 bucket_name = "ssilv-gatsby-test-bucket"
 bucket_region = "us-east-2"

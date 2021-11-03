@@ -8,11 +8,6 @@ variable "application" {
   description = "name of the application"
 }
 
-variable "environment" {
-  type        = string
-  description = "the environment (prod, dev, etc.)"
-}
-
 variable "bucket_name" {
   description = "the name of the bucket with your blog files"
   type = string

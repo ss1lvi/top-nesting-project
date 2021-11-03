@@ -13,9 +13,13 @@ logger.setLevel(logging.INFO)
 my_region = os.environ['MY_REGION']
 s3_client = boto3.client('s3', region_name=my_region)
 bucket_name = os.environ['BUCKET_NAME']
+title_corpus = os.environ['TITLE_CORPUS']
+body_corpus = os.environ['BODY_CORPUS']
 
 logger.info(f'aws_region: {my_region}')
 logger.info(f'bucket_name: {bucket_name}')
+logger.info(f'title_corpus: {title_corpus}')
+logger.info(f'body_corpus: {body_corpus}')
 
 
 def markov_title():
@@ -24,7 +28,7 @@ def markov_title():
     # decode the file to string
     # markovify that text into a model
 
-    obj = s3_client.get_object(Bucket=bucket_name, Key='clickbait.txt')
+    obj = s3_client.get_object(Bucket=bucket_name, Key=title_corpus)
     text = obj['Body'].read().decode('utf-8')
     model = markovify.NewlineText(text)
 
@@ -39,8 +43,7 @@ def markov_body():
     # decode the file to string
     # markovify that text into a model
 
-    # obj = s3_client.get_object(Bucket=bucket_name, Key="internet_archive_scifi_v3.txt")
-    obj = s3_client.get_object(Bucket=bucket_name, Key="clickbait.txt")
+    obj = s3_client.get_object(Bucket=bucket_name, Key=body_corpus)
     text = obj['Body'].read().decode('utf-8')
     # model = markovify.Text(text)
     model = markovify.NewlineText(text)
