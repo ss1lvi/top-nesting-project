@@ -74,11 +74,12 @@ def markov_format(title, body):
 
     logger.info(f'writing article to /tmp/index.md')
 
+    body_short = body[0:120].rstrip()
     with open(f'/tmp/index.md', 'w') as f:
         f.write(f'---\n')
-        f.write(f'title: {title}\n')
+        f.write(f'title: \"{title}\"\n')
         f.write(f'date: {datetime.datetime.now().isoformat()}\n')
-        f.write(f'description: {title}\n')
+        f.write(f'description: \"{body_short}\"\n')
         f.write(f'categories: [paragraph]\n')
         f.write(f'comments: true\n')
         f.write(f'---\n')
