@@ -13,6 +13,12 @@ variable "email_address" {
   type = set(string)
 }
 
+variable "schedule_enabled" {
+  description = "enable the bot to write posts automatically?"
+  type = bool
+  default = true
+}
+
 variable "schedule" {
   description = "how often (in minutes) should a new post be written? (must be 2 or more)"
   type = number

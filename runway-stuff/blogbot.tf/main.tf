@@ -40,8 +40,7 @@ provider "aws" {
 data "aws_caller_identity" "current" {}
 
 data "aws_cloudformation_stack" "sls_output" {
-  # name = "${var.application}-${terraform.workspace}"
-  name = "markov-writer-dev"
+  name = "${var.application}-${terraform.workspace}"
 }
 
 # commented out - 
@@ -103,14 +102,14 @@ resource "aws_sfn_state_machine" "blogbot" {
 
   definition = <<EOF
 {
-  "StartAt": "Lambda Invoke",
+  "StartAt": "Lambda Writer",
   "TimeoutSeconds": 3600,
   "States": {
     "Lambda Writer": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
       "Parameters": {
-        "FunctionName": "arn:aws:lambda:us-east-2:329082876876:function:markov-writer-dev-writer:$LATEST",
+        "FunctionName": "${data.aws_cloudformation_stack.sls_output.outputs["WriterLambdaFunctionQualifiedArn"]}",
         "Payload.$": "$"
       },
       "Retry": [
@@ -131,10 +130,10 @@ resource "aws_sfn_state_machine" "blogbot" {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
       "Parameters": {
-        "FunctionName": ${aws_lambda_function.lambda_sendemail.arn},
+        "FunctionName": "${aws_lambda_function.lambda_sendemail.arn}",
         "Payload": {
           "ExecutionContext.$": "$$",
-          "APIGatewayEndpoint": ${aws_api_gateway_stage.approval.invoke_url},
+          "APIGatewayEndpoint": "${aws_api_gateway_stage.approval.invoke_url}",
           "BlogPost.$": "$.Payload"
         }
       },
@@ -161,7 +160,7 @@ resource "aws_sfn_state_machine" "blogbot" {
       "OutputPath": "$.Payload",
       "Parameters": {
         "Payload.$": "$",
-        "FunctionName": "arn:aws:lambda:us-east-2:329082876876:function:markov-writer-dev-publisher:$LATEST"
+        "FunctionName": "${data.aws_cloudformation_stack.sls_output.outputs["PublisherLambdaFunctionQualifiedArn"]}"
       },
       "Retry": [
         {
@@ -303,7 +302,8 @@ resource "aws_lambda_function" "lambda_sendemail" {
   s3_key = aws_s3_bucket_object.lambda_sendemail.key
 
   runtime = "nodejs12.x"
-  handler = "index.handler"
+  handler = "index.lambda_handler"
+  timeout = 25
 
   source_code_hash = data.archive_file.lambda_sendemail.output_base64sha256
 
@@ -479,10 +479,18 @@ resource "aws_iam_role" "cloudwatch_logs" {
 }
 
 resource "aws_api_gateway_deployment" "approval" {
-  depends_on = [ aws_api_gateway_method.approval ]
+  # depends_on = [ aws_api_gateway_method.approval ]
 
   rest_api_id = aws_api_gateway_rest_api.approval.id
-  stage_name = "dummyStage"
+  # stage_name = "dummyStage"
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.approval.id,
+      aws_api_gateway_method.approval.id,
+      aws_api_gateway_integration.approval.id,
+    ]))
+  }
 
   lifecycle {
     create_before_destroy = true
@@ -508,14 +516,13 @@ resource "aws_api_gateway_method_settings" "approval" {
   }
 }
 
-# resource "aws_lambda_permission" "api_gw" {
-#   statement_id  = "AllowExecutionFromAPIGateway"
-#   action        = "lambda:InvokeFunction"
-#   function_name = aws_lambda_function.lambda_approval.function_name
-#   principal     = "apigateway.amazonaws.com"
-# 
-#   source_arn = "${aws_apigatewayv2_api.lambda.execution_arn}/*/*"
-# }
+resource "aws_lambda_permission" "api_gw" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_approval.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn = "${aws_api_gateway_rest_api.approval.execution_arn}/*"
+}
 
 # SNS topic and subscriptions
 
@@ -535,6 +542,7 @@ resource "aws_cloudwatch_event_rule" "scheduler" {
   name_prefix = "${var.application}-${terraform.workspace}-scheduler"
   description = "schedule for new blog posts to be posted"
   schedule_expression = "rate(${var.schedule} minutes)"
+  is_enabled = var.schedule_enabled
 }
 
 resource "aws_cloudwatch_event_target" "sfn" {
