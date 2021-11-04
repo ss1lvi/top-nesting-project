@@ -1,0 +1,63 @@
+service: blogbot
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: python3.9
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action: 
+            - 's3:ListBucket'
+          Resource: !GetAtt blogBucket.Arn
+        - Effect: 'Allow'
+          Action:
+            - 's3:GetObject'
+            - 's3:PutObject'
+          Resource: !Join ["", [!GetAtt blogBucket.Arn, "/*"]]
+        - Effect: 'Allow'
+          Action:
+            - 'ssm:GetParameter'
+          Resource: 'arn:aws:ssm:us-east-2:329082876876:parameter/git-lambda'
+
+functions:
+  writer:
+    handler: handler.writer
+    timeout: 30
+    environment:
+      BUCKET_NAME: !Ref blogBucket
+      MY_REGION: ${aws:region}
+      TITLE_CORPUS: "clickbait.txt"
+      BODY_CORPUS: "clickbait.txt"
+
+  publisher:
+    handler: publisher.publisher
+    timeout: 30
+    layers:
+      - arn:aws:lambda:us-east-2:553035198032:layer:git-lambda2:8
+    # package:
+    #   individually: true
+    environment:
+      BUCKET_NAME: !Ref blogBucket
+      MY_REGION: ${aws:region}
+      KEY_PARAMETER_NAME: "git-lambda"
+      GIT_SSH_COMMAND: 'ssh -o StrictHostKeyChecking=no -i /tmp/id_rsa'
+      GIT_REPO_URL: 'git@github.com:ss1lvi/nesting-blog.git'
+      GIT_USER_NAME: "ss1lvi"
+      GIT_USER_EMAIL: "steve@silvidi.com"
+      BLOG_PATH: "/content/blog/"
+
+resources:
+  Resources:
+    blogBucket:
+      Type: AWS::S3::Bucket
+  Outputs:
+    BlogBucket:
+      Description: The blog bucket name
+      Value: !Ref blogBucket
+
+plugins:
+  - serverless-python-requirements
