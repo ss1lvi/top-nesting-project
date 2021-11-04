@@ -14,7 +14,6 @@
     - [points](#points)
     - [diagrams](#diagrams)
     - [references](#references)
-    - [log](#log)
     - [pieces](#pieces)
     - [suggestions](#suggestions)
     - [flowchart:](#flowchart)
@@ -90,13 +89,6 @@ a blog (or news site) staffed by a bot/bots
   - [Deploying an Example Human Approval Project](https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-human-approval.html)
 
 
-### log
-
-```sh
-npm run build && npm run deploy
-
-```
-
 ### pieces
 
 - git repo
@@ -166,11 +158,6 @@ npm run build && npm run deploy
 - github actions build script
 - s3 bucket for gatsby w/ static site
 - cloudwatch events schedule trigger for state machine
-
-#### todo
-
-- lambda: cleanup
-  - remove post from s3 bucket
 - build IaC
   - terraform + sls
     - step function in sls or tf?
@@ -179,6 +166,11 @@ npm run build && npm run deploy
     - copy needed files into buckets w/ tf?
     - upload private key for github w/ tf?
   - runway - yeah why not
+
+#### todo
+
+- lambda: cleanup
+  - remove post from s3 bucket
 - remake github repo for website
   - needs a main and a dev branch
   - need env variable so the main and dev branches build to their own s3 buckets
